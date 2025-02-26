@@ -92,7 +92,7 @@ O **SM64Crypt** utiliza uma implementação segura de criptografia, garantindo a
 
 ### Licença
 
-Este projeto está licenciado sob a **MIT License**.
+Este projeto está licenciado sob a **GNU Affero General Public License v3.0 (Modificada)**.
 
 <hr>
 

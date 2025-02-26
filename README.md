@@ -18,7 +18,8 @@ Atualmente, o projeto traz as seguintes funcionalidades:
 
 <div align="center">
 
-![image](https://github.com/user-attachments/assets/2ec5b214-4a40-4fb9-9c90-3fda44d7a10c)
+
+![image](https://github.com/user-attachments/assets/a4847744-2f82-4926-8044-bf6d6d67680d)
 
 
 </div>

